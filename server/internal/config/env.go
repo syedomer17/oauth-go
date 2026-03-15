@@ -35,6 +35,9 @@ type Env struct {
 	SMTPPass  string
 
 	ClientURL string
+
+	MaxFileSize string
+	UploadDir   string
 }
 
 var Config Env
@@ -75,6 +78,9 @@ func LoadEnv() {
 		SMTPPass:  getEnv("SMTP_PASS", ""),
 
 		ClientURL: getEnv("CLIENT_URL", "http://localhost:5173"),
+
+		MaxFileSize: getEnv("MAX_FILE_SIZE", "5242880"),
+		UploadDir:   getEnv("UPLOAD_DIR", "uploads"),
 	}
 }
 

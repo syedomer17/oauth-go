@@ -26,6 +26,7 @@ func main() {
 
 	routes.AuthRoutes(r)
 	routes.UserRoutes(r)
+	routes.UploadRoutes(r)
 
 	log.Println("server is running on port", config.Config.AppPort)
 
