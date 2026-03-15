@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"oauth/internal/config"
 	"oauth/internal/models"
 	"oauth/internal/services"
 	"oauth/internal/utils"
@@ -80,6 +81,7 @@ func GoogleCallback(c *gin.Context) {
 	user, err := authService.HandleOAuthLogin(
 		googleUser.Email,
 		googleUser.Name,
+		"",
 		googleUser.Picture,
 		models.ProviderGoogle,
 		googleUser.ID,
@@ -129,9 +131,8 @@ func GoogleCallback(c *gin.Context) {
 		true,
 	)
 
-	c.JSON(http.StatusOK, gin.H{
-		"user": user,
-	})
+	// Redirect to /me page where the frontend loads and displays the user profile.
+	c.Redirect(http.StatusFound, config.Config.ClientURL+"/me")
 
 }
 
@@ -285,6 +286,7 @@ func GithubCallback(c *gin.Context) {
 	user, err := authService.HandleOAuthLogin(
 		githubUser.Email,
 		name,
+		githubUser.Login,
 		githubUser.Avatar,
 		models.ProviderGitHub,
 		strconv.FormatInt(githubUser.ID, 10),
@@ -311,5 +313,14 @@ func GithubCallback(c *gin.Context) {
 	c.SetCookie("access_token", accessToken, int(utils.AccessTokenTTL.Seconds()), "/", "", true, true)
 	c.SetCookie("refresh_token", session.RefreshToken, int(utils.RefreshTokenTTL.Seconds()), "/", "", true, true)
 
-	c.JSON(http.StatusOK, gin.H{"user": user})
+	// Redirect to /me page where the frontend loads and displays the user profile.
+	c.Redirect(http.StatusFound, config.Config.ClientURL+"/me")
+}
+
+// Logout clears both auth cookies and redirects the user back to the client.
+func Logout(c *gin.Context) {
+	c.SetSameSite(http.SameSiteStrictMode)
+	c.SetCookie("access_token", "", -1, "/", "", true, true)
+	c.SetCookie("refresh_token", "", -1, "/", "", true, true)
+	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 }

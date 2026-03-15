@@ -25,6 +25,7 @@ func main() {
 	r.Use(middleware.CORSMiddleware())
 
 	routes.AuthRoutes(r)
+	routes.UserRoutes(r)
 
 	log.Println("server is running on port", config.Config.AppPort)
 

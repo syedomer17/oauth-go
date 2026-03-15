@@ -21,6 +21,7 @@ type AuthService struct {
 func (s *AuthService) HandleOAuthLogin(
 	email string,
 	name string,
+	username string,
 	avtar string,
 	provider models.Provider,
 	providerID string,
@@ -31,6 +32,7 @@ func (s *AuthService) HandleOAuthLogin(
 		newUser := models.User{
 			Email:      email,
 			Name:       name,
+			Username:   username,
 			Avatar:     avtar,
 			Provider:   provider,
 			ProviderID: providerID,
@@ -44,10 +46,19 @@ func (s *AuthService) HandleOAuthLogin(
 		return &newUser, nil
 	}
 
-	if user.ProviderID == "" {
-		user.Provider = provider
-		user.ProviderID = providerID
+	err = s.UserRepo.UpdateOAuthProfile(user.ID, name, avtar, provider, providerID, username)
+	if err != nil {
+		return nil, err
 	}
+
+	user.Name = name
+	user.Avatar = avtar
+	user.Provider = provider
+	user.ProviderID = providerID
+	if username != "" {
+		user.Username = username
+	}
+
 	return user, nil
 }
 
