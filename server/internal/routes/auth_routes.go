@@ -11,4 +11,7 @@ func AuthRoutes(r *gin.Engine) {
 
 	auth.GET("/google/login", controller.GoogleLogin)
 	auth.GET("/google/callback", controller.GoogleCallback)
+	auth.GET("/github/login", controller.GithubLogin)
+	auth.GET("/github/callback", controller.GithubCallback)
+	auth.POST("/refresh", controller.RefreshToken)
 }
